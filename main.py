@@ -3,10 +3,13 @@ import os
 import asyncio
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types.chat import ChatType as ct
+import datetime
 
 
 API_TOKEN = os.getenv("TOKEN")
 BOT_ADMIN_ID = os.getenv("ADMIN_ID")
+
+WEEKDAY_NAMES = ["понедельник", "вторник", "среда", "четверг", "пятница", "суббота"]
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
@@ -29,7 +32,12 @@ async def bot_joined(event: types.chat_member_updated.ChatMemberUpdated) -> bool
 
 @dp.my_chat_member_handler(bot_joined)
 async def chat_member(event: types.chat_member_updated.ChatMemberUpdated):
-    await bot.send_message(event.chat.id, "Всем привет!")
+    await bot.send_message(event.chat.id, "Всем привет!\n\n"
+                                          "Это бот, который отправляет опросы про посещение "
+                                          "каждый вечер накануне учебного дня. "
+                                          "Чтобы узнать подробнее о возможностях бота, "
+                                          "отправьте мне команду /help в *личном* сообщении",
+                           parse_mode="markdown")
 
 
 @dp.message_handler(commands=['start', 'help'], chat_type=[ct.PRIVATE])
@@ -37,7 +45,15 @@ async def help_command(message: types.Message):
     """
     This handler will be called when user sends `/start` or `/help` command
     """
-    await message.reply("Hi!\nI'm EchoBot!\nPowered by aiogram.")
+    await message.reply("Здравствуйте! Это бот, который отправляет опросы про посещение "
+                        "каждый вечер накануне учебного дня. Ниже список команд, "
+                        "доступных админам чатов. Эти команды работают только в группах.\n\n"
+                        "/poll – отправить опрос про посещаемость (не по расписанию, вручную)\n"
+                        "/delete – удалить сообщение (например, опрос), отправленное ботом. "
+                        "Эту команду нужно отправлять в ответ на сообщение.\n\n"
+                        "(Исходный код бота здесь)[https://github.com/nawinds/poll_sender_bot]\n"
+                        "_Любые вопросы, предложения пишите на me@nawinds.top. С удовольствием отвечу!_",
+                        parse_mode="markdown")
 
 
 @dp.message_handler(is_admin, commands=["poll"],
@@ -48,7 +64,19 @@ async def poll(message: types.Message):
         "Не приду",
         "Посмотреть результаты"
     ]
-    await message.answer_poll("day?", options=options,
+
+    def format_data(number: int) -> str:
+        number = str(number)
+        if len(number) < 2:
+            number = "0" + number
+        return number
+
+    target_day = datetime.datetime.now()
+    if target_day.hour > 15:
+        target_day = target_day + datetime.timedelta(days=1)
+    weekday = WEEKDAY_NAMES[target_day.weekday()].capitalize()
+    title = f"{weekday}, {format_data(target_day.day)}.{format_data(target_day.month)}"
+    await message.answer_poll(title, options=options,
                               is_anonymous=False, allows_multiple_answers=False)
 
 
