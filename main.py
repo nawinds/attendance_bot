@@ -34,13 +34,13 @@ async def bot_joined(event: types.chat_member_updated.ChatMemberUpdated) -> bool
     if event.new_chat_member.user.id == dp.bot.id:
         with open("group_chats.txt", encoding="utf-8") as rf:
             group_chats = rf.read().split(",")
-        with open("group_chats.txt", "w", encoding="utf-8") as f:
-            if event.new_chat_member.status == "member":
-                f.write(",".join(group_chats + [str(event.chat.id)]))
-                return True
-            elif event.chat.id in group_chats:
-                group_chats.remove(event.chat.id)
-            f.write(",".join(group_chats))
+            with open("group_chats.txt", "w", encoding="utf-8") as f:
+                if event.new_chat_member.status == "member":
+                    f.write(",".join(group_chats + [str(event.chat.id)]))
+                    return True
+                elif str(event.chat.id) in group_chats:
+                    group_chats.remove(str(event.chat.id))
+                f.write(",".join(group_chats))
     return False
 
 
@@ -59,14 +59,15 @@ async def help_command(message: types.Message):
     """
     This handler will be called when user sends `/start` or `/help` command
     """
-    await message.answer("Здравствуйте!\n\nЭто бот, который каждый вечер накануне учебного дня "
-                         "отправляет опросы про посещение школы. Ниже список команд, "
-                         "доступных админам чатов. Эти команды работают только в группах.\n\n"
-                         "/poll – отправить опрос про посещаемость (не по расписанию, вручную)\n"
-                         "/delete – удалить сообщение (например, опрос), отправленное ботом. "
-                         "Эту команду нужно отправлять в ответ на сообщение.\n\n"
-                         "[Исходный код бота здесь](https://github.com/nawinds/poll_sender_bot)\n\n"
-                         "_Любые вопросы, предложения пишите на me@nawinds.top. С удовольствием отвечу!_",
+    await message.answer(f"Здравствуйте!\n\nЭто бот, который каждый вечер накануне учебного дня "
+                         f"отправляет опросы про посещение школы. Ниже список команд"
+                         f"{', доступных админам чатов' if ADMIN_RIGHTS_ONLY else ''}. "
+                         f"Эти команды работают только в группах.\n\n"
+                         f"/poll – отправить опрос про посещаемость (не по расписанию, вручную)\n"
+                         f"/delete – удалить сообщение (например, опрос), отправленное ботом. "
+                         f"Эту команду нужно отправлять в ответ на сообщение.\n\n"
+                         f"[Исходный код бота здесь](https://github.com/nawinds/poll_sender_bot)\n\n"
+                         f"_Любые вопросы, предложения пишите на me@nawinds.top. С удовольствием отвечу!_",
                          parse_mode="markdown", disable_web_page_preview=True)
 
 
