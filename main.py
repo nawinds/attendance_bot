@@ -6,7 +6,7 @@ from aiogram.types.chat import ChatType as ct
 import datetime
 
 API_TOKEN = os.getenv("TOKEN")
-BOT_ADMIN_ID = os.getenv("ADMIN_ID")
+BOT_ADMIN_ID = int(os.getenv("ADMIN_ID"))
 
 WEEKDAY_NAMES = ["понедельник", "вторник", "среда", "четверг", "пятница", "суббота"]
 
@@ -20,7 +20,7 @@ if not os.path.exists("group_chats.txt"):
 
 async def is_admin(message: types.Message) -> bool:
     admins = [member.user.id for member in await message.bot.get_chat_administrators(message.chat.id)]
-    return message.from_user.id == BOT_ADMIN_ID or message.from_user.id in admins
+    return int(message.from_user.id) == BOT_ADMIN_ID or message.from_user.id in admins
 
 
 async def not_admin(message: types.Message) -> bool:
@@ -37,7 +37,7 @@ async def bot_joined(event: types.chat_member_updated.ChatMemberUpdated) -> bool
                 return True
             elif event.chat.id in group_chats:
                 group_chats.remove(event.chat.id)
-                f.write(",".join(group_chats))
+            f.write(",".join(group_chats))
     return False
 
 
