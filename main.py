@@ -7,6 +7,7 @@ import datetime
 
 API_TOKEN = os.getenv("TOKEN")
 BOT_ADMIN_ID = int(os.getenv("ADMIN_ID"))
+ADMIN_RIGHTS_ONLY = False
 
 WEEKDAY_NAMES = ["понедельник", "вторник", "среда", "четверг", "пятница", "суббота"]
 
@@ -19,6 +20,8 @@ if not os.path.exists("group_chats.txt"):
 
 
 async def is_admin(message: types.Message) -> bool:
+    if not ADMIN_RIGHTS_ONLY:
+        return True
     admins = [member.user.id for member in await message.bot.get_chat_administrators(message.chat.id)]
     return int(message.from_user.id) == BOT_ADMIN_ID or message.from_user.id in admins
 
