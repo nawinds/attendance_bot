@@ -7,6 +7,7 @@ import asyncio
 
 API_TOKEN = os.getenv("TOKEN")
 
+START_DATE = datetime.datetime(year=2022, month=2, day=26)
 WEEKDAY_NAMES = ["понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье"]
 OPTIONS = [
     "Буду в школе",
@@ -25,6 +26,9 @@ with open("group_chats.txt", encoding="utf-8") as f:
     group_chats = f.read().split(",")
 
 if datetime.datetime.now().weekday() == 5:
+    exit()
+
+if datetime.datetime.now() < START_DATE:
     exit()
 
 
