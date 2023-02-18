@@ -24,7 +24,7 @@ if not os.path.exists("group_chats.txt"):
 with open("group_chats.txt", encoding="utf-8") as f:
     group_chats = f.read().split(",")
 
-if datetime.datetime.now().weekday() in (4, 5):
+if datetime.datetime.now().weekday() == 5:
     exit()
 
 
