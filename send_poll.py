@@ -7,7 +7,7 @@ import asyncio
 
 API_TOKEN = os.getenv("TOKEN")
 
-START_DATE = datetime.datetime(year=2022, month=2, day=26)
+START_DATE = datetime.datetime(year=2023, month=2, day=26)
 WEEKDAY_NAMES = ["понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье"]
 OPTIONS = [
     "Буду в школе",
