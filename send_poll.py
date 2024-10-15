@@ -2,7 +2,7 @@ import logging
 import os
 import datetime
 import asyncio
-from main import POLL_TITLE, POLL_OPTIONS, bot
+from main import POLL_TITLE, POLL_OPTIONS, MAIN_GROUP_ID, bot
 
 START_DATE = datetime.datetime(year=2023, month=2, day=26)
 WEEKDAY_NAMES = ["понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье"]
@@ -19,9 +19,10 @@ def format_data(number: int) -> str:
 
 async def send_poll(chat_id: int, question: str, options: list[str]) -> None:
     poll = await bot.send_poll(chat_id, question, options=options,
-                              is_anonymous=False, allows_multiple_answers=False)
-    with open("last_poll.txt", "w", encoding="utf-8") as wf:
-        wf.write(f"{chat_id} {poll.message_id}")
+                               is_anonymous=False, allows_multiple_answers=False)
+    if chat_id == MAIN_GROUP_ID:
+        with open("last_poll.txt", "w", encoding="utf-8") as wf:
+            wf.write(f"{chat_id} {poll.message_id}")
 
 
 async def main():
@@ -31,7 +32,7 @@ async def main():
     with open("group_chats.txt", encoding="utf-8") as f:
         group_chats = f.read().split(",")
 
-    if datetime.datetime.now().weekday() in (0, 6):
+    if datetime.datetime.now().weekday() not in (1, 4):
         exit()
 
     if datetime.datetime.now() < START_DATE:

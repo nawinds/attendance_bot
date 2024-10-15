@@ -10,6 +10,7 @@ from aiogram import F
 
 TOKEN = os.getenv("TOKEN")
 BOT_ADMIN_ID = int(os.getenv("ADMIN_ID"))
+MAIN_GROUP_ID = int(os.getenv("MAIN_GROUP_ID"))
 ADMIN_RIGHTS_ONLY = bool(int(os.getenv("ADMIN_RIGHTS_ONLY", 1)))
 
 WEEKDAY_NAMES = ["понедельник", "вторник", "среда", "четверг", "пятница", "суббота"]
@@ -28,7 +29,7 @@ if not os.path.exists("group_chats.txt"):
 
 
 async def is_admin(message: types.Message) -> bool:
-    if type(message) == types.chat_member_updated.ChatMemberUpdated:
+    if type(message) != types.message.Message:
         return False
     if message.chat.type == 'private':
         return int(message.from_user.id) == BOT_ADMIN_ID
@@ -104,8 +105,9 @@ async def poll(message: types.Message):
     poll_message = await message.answer_poll(title, options=POLL_OPTIONS,
                                              is_anonymous=False, allows_multiple_answers=False)
     await message.delete()
-    with open("last_poll.txt", "w", encoding="utf-8") as wf:
-        wf.write(f"{poll_message.chat.id} {poll_message.message_id}")
+    if message.chat.id == MAIN_GROUP_ID:
+        with open("last_poll.txt", "w", encoding="utf-8") as wf:
+            wf.write(f"{poll_message.chat.id} {poll_message.message_id}")
 
 
 @dp.message(is_admin, Command("delete"), F.chat.func(lambda chat:
@@ -153,10 +155,14 @@ async def non_private(message: types.Message):
     await message.delete()
 
 
-@dp.callback_query(is_admin, F.data.startswith("list-"))
-async def poll_callback(callback_query: types.CallbackQuery):
-    poll_id = int(callback_query.split("-")[1])
-    print(poll_id, callback_query)
+# @dp.callback_query(F.data.startswith("list "))
+# async def poll_callback(callback_query: types.CallbackQuery):
+#     poll_chat, poll_id = map(int, callback_query.data.split()[1].split("_"))
+#     poll = await bot.forward_message(callback_query.from_user.id, poll_chat, poll_id)
+#     answers = poll.poll.options
+#     for option in answers:
+#         print(f"{option.text}: {option} votes")
+#     await poll.delete()
 
 
 async def main() -> None:
