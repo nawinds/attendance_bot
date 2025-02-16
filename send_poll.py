@@ -32,8 +32,13 @@ async def main():
     with open("group_chats.txt", encoding="utf-8") as f:
         group_chats = f.read().split(",")
 
-    if datetime.datetime.now().weekday() not in (1, 4):
-        exit()
+    week = datetime.datetime.now().isocalendar().week
+    if week % 2 == 0:
+        if datetime.datetime.now().weekday() not in (0, 4):
+            exit()
+    else:
+        if datetime.datetime.now().weekday() not in (2, 4):
+            exit()
 
     if datetime.datetime.now() < START_DATE:
         exit()

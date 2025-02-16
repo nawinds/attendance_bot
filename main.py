@@ -17,7 +17,8 @@ WEEKDAY_NAMES = ["понедельник", "вторник", "среда", "че
 POLL_TITLE = "Кто придет на пару Сарычева?"
 POLL_OPTIONS = [
     "Буду",
-    "Не приду"
+    "Опоздаю",
+    "Не приду",
 ]
 
 logging.basicConfig(level=logging.INFO)
