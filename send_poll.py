@@ -34,7 +34,7 @@ async def main():
 
     week = datetime.datetime.now().isocalendar().week
     if week % 2 == 0:
-        if datetime.datetime.now().weekday() not in (0, 4):
+        if datetime.datetime.now().weekday() != 4:
             exit()
     else:
         if datetime.datetime.now().weekday() not in (2, 4):
